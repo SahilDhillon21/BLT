@@ -1017,3 +1017,63 @@ def check_security_txt(domain_url):
 
     # If we reach here, no security.txt was found
     return False
+
+
+def calculate_sha256_hash(file_path: str) -> str:
+    """
+    Calculate the SHA-256 hash of a file.
+
+    Args:
+        file_path (str): Path to the file.
+
+    Returns:
+        str: The SHA-256 hash of the file in hexadecimal format.
+    """
+    try:
+        with open(file_path, "rb") as f:
+            file_hash = hashlib.sha256()
+            while chunk := f.read(8192):
+                file_hash.update(chunk)
+        return file_hash.hexdigest()
+    except FileNotFoundError:
+        logging.error(f"File not found: {file_path}")
+        return ""
+    except Exception as e:
+        logging.error(f"Error calculating SHA-256 hash for {file_path}: {str(e)}")
+        return ""
+
+
+def extract_domain_from_url(url: str) -> str:
+    """
+    Extract the domain name from a given URL.
+
+    Args:
+        url (str): The URL to extract the domain from.
+
+    Returns:
+        str: The domain name, or an empty string if extraction fails.
+    """
+    try:
+        parsed_url = urlparse(url)
+        return parsed_url.netloc
+    except Exception as e:
+        logging.error(f"Error extracting domain from URL {url}: {str(e)}")
+        return ""
+
+
+def is_valid_email(email: str) -> bool:
+    """
+    Validate if the given string is a valid email address.
+
+    Args:
+        email (str): The email address to validate.
+
+    Returns:
+        bool: True if valid, False otherwise.
+    """
+    email_regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    if re.match(email_regex, email):
+        return True
+    else:
+        logging.warning(f"Invalid email address: {email}")
+        return False
