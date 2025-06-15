@@ -27,6 +27,7 @@ from website.utils import (
 
 logger = logging.getLogger(__name__)
 
+# Only changing this for trial.
 
 class SimilarityConsumer(AsyncWebsocketConsumer):
     async def connect(self):
