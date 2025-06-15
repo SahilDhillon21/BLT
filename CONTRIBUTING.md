@@ -2,6 +2,8 @@
 
 Thank you for your interest in contributing to OWASP BLT! We welcome contributions from everyone, regardless of your level of experience.
 
+ a random change
+
 ## Table of Contents
 
 - [Code of Conduct](#code-of-conduct)
