@@ -7,7 +7,7 @@
 <img alt="Views" src="https://owaspblt.org/repos/blt/badge/">
 
 Everything is on our <a href="https://owaspblt.org">homepage</a>
-
+something random
 ## Star History
 
 <a href="https://star-history.com/#OWASP-BLT/BLT&Date">
