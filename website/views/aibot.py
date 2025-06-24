@@ -422,7 +422,14 @@ def aibot_handle_new_pr_opened(payload: Dict[str, Any]) -> None:
     else:
         context += "PR Diff: Unable to fetch diff.\n"
 
-    logger.info("Context for AI Bot: %s", context)
+    prompt = (
+        f"{context}\n"
+        "You are an experienced open source reviewer. Please provide a concise, constructive review of this pull request. "
+        "Highlight any strengths, potential issues, and suggest improvements if needed. "
+        "Be friendly and professional."
+    )
+
+    logger.info("Context for AI Bot: %s", prompt)
     ai_response = _generate_response(context)
     if not ai_response:
         logger.error("Failed to generate AI response for new PR.")
