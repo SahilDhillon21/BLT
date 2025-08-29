@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Submit Pull Request
+{% endblock title %}
+{% block description %}
+    Submit your pull request by providing the issue link, BCH address, and PR link. Fetch issue data and place a bid to contribute effectively.
+{% endblock description %}
+{% block keywords %}
+    Submit Pull Request, Pull Request Submission, Issue Link, BCH Address, PR Link, Fetch Data, Place Bid
+{% endblock keywords %}
+{% block og_title %}
+    Submit Pull Request - Contribute Effectively
+{% endblock og_title %}
+{% block og_description %}
+    Easily submit your pull request by providing necessary details such as issue link, BCH address, and PR link. Fetch data and place a bid for efficient contribution.
+{% endblock og_description %}
+{% block content %}
+    {% include "includes/sidenav.html" %}
+    <script>
+        function fetchData() {
+            const issueUrl = document.getElementById('issue_link').value;
+            const csrftoken = getCookie('csrftoken');
+            const githubUrlPattern = /^https?:\/\/github\.com\/.*$/i;
+            if (!githubUrlPattern.test(issueUrl)) {
+                document.getElementById('invalidUrlMessage').style.display = "block";
+                return;
+            } else {
+                document.getElementById('invalidUrlMessage').style.display = "none";
+            }
+            fetch(`/fetch-current-bid/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({ issue_url: issueUrl }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if ('current_bid' in data) {
+                    const currentBid = data.current_bid;
+                    const status = data.status;
+                    if (status === "Selected") { 
+                        document.getElementById('pr_label').style.display = "block";
+                        document.getElementById('bch_label').style.display = "block";
+                        document.getElementById('pr_link').style.display = "block";
+                        document.getElementById('bch_address').style.display = "block";
+                    } else if (status === "Submitted") {
+                        document.getElementById('pr_label').style.display = "block";
+                        document.getElementById('pr_label').textContent = "PR is submitted, Please contact your repository head";
+                    } else {
+                        document.getElementById('pr_label').style.display = "block";
+                        document.getElementById('pr_link').style.display = "none";
+                        document.getElementById('pr_label').textContent = "Bid is not selected: Status is Open/Closed";
+                    }
+                    document.getElementById('bid_amount').value = currentBid;
+                    document.getElementById('BidDisplay').innerHTML = `Current Bid: ${currentBid} <br>`;
+                } else {
+                    document.getElementById('BidDisplay').innerHTML = 'No current bid';
+                }
+            });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+    <div class="min-h-screen font-sans">
+        <form id="submit_pr"
+              action="{% url 'submit_pr' %}"
+              method="post"
+              class="max-w-sm mx-auto mt-8 p-6 bg-white rounded shadow-md">
+            {% csrf_token %}
+            <label for="issue_link" class="block mb-2 font-bold">Issue Link</label>
+            <input type="text"
+                   name="issue_link"
+                   id="issue_link"
+                   class="w-full px-3 py-2 mb-4 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+            <button id="fetch"
+                    type="button"
+                    onclick="fetchData()"
+                    class="w-full px-4 py-2 mb-4 text-white bg-blue-500 rounded hover:bg-blue-600 transition duration-300">
+                Fetch Data
+            </button>
+            <p id="invalidUrlMessage" class="hidden text-red-500 text-sm">Please enter a valid GitHub link</p>
+            <p id="BidDisplay" class="mb-4"></p>
+            <input type="hidden" name="bid_amount" id="bid_amount">
+            <label for="bch_address" id="bch_label" class="hidden block mb-2 font-bold">Add your BCH Address</label>
+            <input type="text"
+                   name="bch_address"
+                   id="bch_address"
+                   required
+                   class="hidden w-full px-3 py-2 mb-4 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+            <label for="pr_link" id="pr_label" class="hidden block mb-2 font-bold">Link to your Pull Request</label>
+            <input type="text"
+                   name="pr_link"
+                   id="pr_link"
+                   required
+                   class="hidden w-full px-3 py-2 mb-4 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+            <button type="submit"
+                    id="submit"
+                    class="w-full px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 transition duration-300">
+                Submit
+            </button>
+        </form>
+        <div id="Link_bid" class="text-center mt-8">
+            <a href="{% url 'BiddingData' %}"
+               class="inline-block px-6 py-3 bg-red-500 text-black rounded hover:bg-red-600 transition duration-300">Place a Bid</a>
+        </div>
+    </div>
+{% endblock content %}

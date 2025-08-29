@@ -1,0 +1,125 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+{% load gravatar %}
+{% load socialaccount %}
+{% load humanize %}
+{% providers_media_js %}
+{% load i18n %}
+{% block content %}
+    <section>
+        {% include "includes/user_sidenav.html" %}
+    </section>
+    <div class="p-4">
+        <!-- Upcoming Hunts -->
+        {% if upcoming_hunts %}
+            <div class="mb-8">
+                <h3 class="text-2xl font-bold text-left mb-4">Upcoming Hunt</h3>
+                <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for hunt in upcoming_hunts %}
+                        <li class="flex">
+                            <div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col w-full">
+                                {% if hunt.logo %}
+                                    <div class="w-full h-48 overflow-hidden">
+                                        <img src="{{ hunt.logo }}"
+                                             alt="{{ hunt.name }}"
+                                             class="w-full h-full object-cover"
+                                             width="192"
+                                             height="108">
+                                    </div>
+                                {% endif %}
+                                <div class="p-6 bg-gradient-to-br from-[#EF8D9C] to-[#FFC39E] flex-1 flex flex-col">
+                                    <h2 class="text-xl font-bold text-white mb-2">{{ hunt.name }}</h2>
+                                    <p class="text-sm text-white mb-4">
+                                        {{ hunt.domain.name }}, {{ hunt.domain.organization.name }} - Starts on {{ hunt.starts_on }}
+                                    </p>
+                                    <a href="{% url 'view_hunt' hunt.pk %}" class="mt-auto">
+                                        <button class="w-full py-2 px-4 text-white border border-white rounded-md hover:bg-white hover:text-[#EF8D9C] transition duration-200">
+                                            Read More
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <!-- Ongoing Hunts -->
+        {% if ongoing_hunt %}
+            <div class="mb-8">
+                <h3 class="text-2xl font-bold text-left mb-4">Ongoing Hunt</h3>
+                <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for hunt in ongoing_hunt %}
+                        <li class="flex">
+                            <div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col w-full">
+                                {% if hunt.logo %}
+                                    <div class="w-full h-48 overflow-hidden">
+                                        <img src="{{ hunt.logo }}"
+                                             alt="{{ hunt.name }}"
+                                             class="w-full h-full object-cover"
+                                             width="192"
+                                             height="108">
+                                    </div>
+                                {% endif %}
+                                <div class="p-6 bg-gradient-to-br from-[#EF8D9C] to-[#FFC39E] flex-1 flex flex-col">
+                                    <h2 class="text-xl font-bold text-white mb-2">{{ hunt.name }}</h2>
+                                    <p class="text-sm text-white mb-4">{{ hunt.domain.name }}, {{ hunt.domain.organization.name }} - Already Started</p>
+                                    <a href="{% url 'view_hunt' hunt.pk %}" class="mt-auto">
+                                        <button class="w-full py-2 px-4 text-white border border-white rounded-md hover:bg-white hover:text-[#EF8D9C] transition duration-200">
+                                            Read More
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <!-- Previous Hunts -->
+        {% if previous_hunt %}
+            <div class="mb-8">
+                <h3 class="text-2xl font-bold text-left mb-4">Previous Hunt</h3>
+                <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for hunt in previous_hunt %}
+                        <li class="flex">
+                            <div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col w-full">
+                                {% if hunt.logo %}
+                                    <div class="w-full h-48 overflow-hidden">
+                                        <img src="{{ hunt.logo }}"
+                                             alt="{{ hunt.name }}"
+                                             class="w-full h-full object-cover"
+                                             width="192"
+                                             height="108">
+                                    </div>
+                                {% endif %}
+                                <div class="p-6 bg-gradient-to-br from-[#EF8D9C] to-[#FFC39E] flex-1 flex flex-col">
+                                    <h2 class="text-xl font-bold text-white mb-2">{{ hunt.name }}</h2>
+                                    <p class="text-sm text-white mb-4">
+                                        {{ hunt.domain.name }}, {{ hunt.domain.organization.name }} - Ended on {{ hunt.end_on }}
+                                    </p>
+                                    <a href="{% url 'view_hunt' hunt.pk %}" class="mt-auto">
+                                        <button class="w-full py-2 px-4 text-white border border-white rounded-md hover:bg-white hover:text-[#EF8D9C] transition duration-200">
+                                            Read More
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+    <!-- Bottom-right icons -->
+    <div class="fixed bottom-4 right-4 flex gap-4">
+        <a href="https://github.com/OWASP-BLT/BLT/blob/main/website/templates/index_user.html"
+           class="text-gray-700 hover:text-gray-900">
+            <i class="fab fa-github text-2xl"></i>
+        </a>
+        <a href="https://www.figma.com/file/s0xuxeU6O2guoWEfA9OElZ/Design?node-id=488%3A1350&t=pqxWpF3hcYxjEDrs-1"
+           class="text-gray-700 hover:text-gray-900">
+            <i class="fab fa-figma text-2xl"></i>
+        </a>
+    </div>
+{% endblock content %}

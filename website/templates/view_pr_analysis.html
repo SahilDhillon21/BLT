@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "includes/sidenav.html" %}
+    <title>PR Analysis Reports</title>
+    <div class="container mx-auto bg-gray-100 p-5 max-w-2xl rounded-lg shadow-md mt-20">
+        <h1 class="text-center text-3xl text-gray-800 mb-8">PR Analysis Reports</h1>
+        {% for report in reports %}
+            <div class="bg-white p-4 mb-5 border border-gray-300 rounded">
+                <h3 class="text-lg text-gray-700 mb-2">PR Analysis</h3>
+                <p>
+                    <strong>PR Link:</strong> <a href="{{ report.pr_link }}" target="_blank" class="text-blue-500">{{ report.pr_link }}</a>
+                </p>
+                <p>
+                    <strong>Issue Link:</strong> <a href="{{ report.issue_link }}" target="_blank" class="text-blue-500">{{ report.issue_link }}</a>
+                </p>
+                <p>
+                    <strong>Priority Alignment Score:</strong> {{ report.priority_alignment_score }}
+                </p>
+                <p>
+                    <strong>Revision Score:</strong> {{ report.revision_score }}
+                </p>
+                <p>
+                    <strong>Recommendations:</strong>
+                </p>
+                <p>{{ report.recommendations }}</p>
+                <p class="text-gray-500">
+                    <small><em>Created on: {{ report.created_at }}</em></small>
+                </p>
+            </div>
+            <hr class="border-t border-gray-300 my-5">
+        {% empty %}
+            <p class="text-center text-gray-500">No analysis reports available.</p>
+        {% endfor %}
+    </div>
+{% endblock content %}

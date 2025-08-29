@@ -1,0 +1,161 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+{% load tz_detect %}
+{% block content %}
+    <section>
+        {% include "includes/organization_sidenav.html" %}
+    </section>
+    <script src="{% static 'js/jquery.validate.js' %}"></script>
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'css/mtr-datepicker.min.css' %}" />
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'css/mtr-datepicker.default-theme.min.css' %}" />
+    <form id="create-hunt"
+          class="fixed top-[105%] left-1/2 transform -translate-x-1/2 w-1/2 bg-white rounded-lg shadow-lg p-6">
+        {% csrf_token %}
+        <!-- Modal Header -->
+        <div class="mb-6">
+            <h4 class="text-2xl font-bold">
+                <span class="text-black">START A</span> BUG BOUNTY
+            </h4>
+            <h6 class="text-gray-600">Enter URL, App name or GPS location of issue</h6>
+        </div>
+        <!-- Modal Body -->
+        <div class="space-y-6">
+            <!-- Name Input -->
+            <div>
+                <input type="text"
+                       name="name"
+                       required
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       placeholder="Enter Name for the Bug Bounty"
+                       id="name"
+                       value="">
+            </div>
+            <!-- Hunt Form Media -->
+            <div>
+                {{ hunt_form.media }}
+                {{ hunt_form.as_p }}
+            </div>
+            <!-- Date/Time Pickers -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="name" class="block text-gray-700">Start Date/Time :</label>
+                    <div id="datepicker-1-res" class="hidden"></div>
+                    <div id="datepicker-1"></div>
+                </div>
+                <div>
+                    <label for="name" class="block text-gray-700">End Date/Time :</label>
+                    <div id="datepicker-2-res" class="hidden"></div>
+                    <div id="datepicker-2"></div>
+                </div>
+            </div>
+            <!-- Domain Selection -->
+            <div>
+                <select name="domain"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        id="domain">
+                    {% for domain in domains %}<option>{{ domain.id }} - {{ domain.name }}</option>{% endfor %}
+                </select>
+            </div>
+            <!-- Prizes Section -->
+            <div>
+                <span class="block text-gray-700">Prizes</span>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block">
+                            <input name="prize_winner"
+                                   type="number"
+                                   placeholder="Winner"
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            <span class="text-gray-600">$</span>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="block">
+                            <input placeholder="Runner's Up"
+                                   name="prize_runner"
+                                   type="number"
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            <span class="text-gray-600">$</span>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="block">
+                            <input placeholder="2nd Runner's Up"
+                                   name="prize_second_runner"
+                                   type="number"
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            <span class="text-gray-600">$</span>
+                        </label>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">
+                    (Your wallet must contain the total prize money, if not you can go to profile to add money to wallet)
+                </p>
+            </div>
+            <!-- Publish Checkbox -->
+            <div>
+                <label class="flex items-center">
+                    <input name="publish" type="checkbox" value="true" class="mr-2">
+                    <span>Publish (If Not Published, the Hunt Will be saved as a draft)</span>
+                </label>
+            </div>
+        </div>
+        <!-- Modal Footer -->
+        <div class="mt-6 flex justify-end gap-4">
+            <button type="submit"
+                    class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-200">
+                Save
+            </button>
+            <button type="reset"
+                    class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition duration-200">
+                Reset
+            </button>
+        </div>
+    </form>
+    <script type="text/javascript"
+            src="{% static 'js/mtr-datepicker-timezones.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/mtr-datepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/dt.js' %}"></script>
+    <script type="text/javascript">
+        var dateNow = new Date();
+        var Datepicker1 = MtrDatepickerDemo.init({
+            target: 'datepicker-1',
+            timestamp: dateNow.getTime(),
+            future: true,
+        }, {
+            exportFormats: 'datepicker-1-res',
+        });
+        var Datepicker2 = MtrDatepickerDemo.init({
+            target: 'datepicker-2',
+            timestamp: dateNow.getTime(),
+            future: true,
+        }, {
+            exportFormats: 'datepicker-2-res',
+        });
+    </script>
+{% endblock content %}
+{% block after_js %}
+    <script src="{% static 'js/bootstrap-slider.js' %}"></script>
+    <script>
+        $('.btn').on('click', function () {
+            $(".hunt-form").valid();
+        });
+
+        function numberWithCommas(x) {
+            var parts = x.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return parts.join(".");
+        }
+
+        $(".slider").slider({
+            tooltip: 'always',
+            formatter: function (value) {
+                return '$' + numberWithCommas(value);
+            }
+        });
+    </script>
+{% endblock after_js %}

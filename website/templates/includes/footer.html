@@ -1,0 +1,91 @@
+{% load static %}
+{% load i18n %}
+{% load custom_tags %}
+<!-- Main Footer Component -->
+<footer class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 h-[80px] z-50">
+    <div class="max-w-screen-2xl mx-auto h-full flex items-center justify-between px-8">
+        <!-- Left Section - Common Links -->
+        <div class="flex items-center space-x-10">
+            <a href="{% url 'domains' %}"
+               class="text-gray-700 dark:text-gray-200 hover:text-blue-500 flex items-center gap-3 text-xl font-medium transition-colors">
+                <i class="fas fa-sitemap text-2xl"></i>
+                <span>Organizations</span>
+            </a>
+            <a href="{% url 'project_list' %}"
+               class="text-gray-700 dark:text-gray-200 hover:text-blue-500 flex items-center gap-3 text-xl font-medium transition-colors">
+                <i class="fas fa-box text-2xl"></i>
+                <span>Projects</span>
+            </a>
+            <a href="{% url 'contributors' %}"
+               class="text-gray-700 dark:text-gray-200 hover:text-blue-500 flex items-center gap-3 text-xl font-medium transition-colors">
+                <i class="fas fa-users text-2xl"></i>
+                <span>Contributors</span>
+            </a>
+        </div>
+        <!-- Center Section - Version & Links -->
+        <div class="flex items-center space-x-8">
+            <span class="text-lg font-medium text-gray-600 dark:text-gray-300">v2.0</span>
+            <div class="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+            {% get_current_template as current_template %}
+            <!-- End debug output -->
+            {% if current_template %}
+                <a href="https://github.com/OWASP-BLT/BLT/blob/main/website/templates/{{ current_template }}"
+                   target="_blank"
+                   rel="noopener"
+                   class="text-gray-700 dark:text-gray-200 hover:text-blue-500 flex items-center gap-3 text-xl font-medium transition-colors">
+                    <i class="fas fa-edit text-2xl"></i>
+                    <span>Edit</span>
+                </a>
+            {% endif %}
+            <a href="https://www.figma.com/file/s0xuxeU6O2guoWEfA9OElZ/Design"
+               target="_blank"
+               rel="noopener"
+               class="text-gray-700 dark:text-gray-200 hover:text-blue-500 flex items-center gap-3 text-xl font-medium transition-colors">
+                <i class="fab fa-figma text-2xl"></i>
+                <span>Design</span>
+            </a>
+        </div>
+        <!-- Right Section - Social Links & Language -->
+        <div class="flex items-center space-x-8">
+            <div class="flex items-center space-x-6">
+                <a href="https://twitter.com/OWASP_BLT"
+                   target="_blank"
+                   rel="noopener"
+                   class="text-gray-700 dark:text-gray-200 hover:text-blue-400 flex flex-col items-center gap-1 transition-colors">
+                    <i class="fab fa-twitter text-2xl"></i>
+                    <span class="text-base font-medium">Twitter</span>
+                </a>
+                <a href="https://www.facebook.com/groups/owaspfoundation/"
+                   target="_blank"
+                   rel="noopener"
+                   class="text-gray-700 dark:text-gray-200 hover:text-blue-600 flex flex-col items-center gap-1 transition-colors">
+                    <i class="fab fa-facebook text-2xl"></i>
+                    <span class="text-base font-medium">Facebook</span>
+                </a>
+                <a href="https://owasp.org/slack/invite"
+                   target="_blank"
+                   rel="noopener"
+                   class="text-gray-700 dark:text-gray-200 hover:text-purple-500 flex flex-col items-center gap-1 transition-colors">
+                    <i class="fab fa-slack text-2xl"></i>
+                    <span class="text-base font-medium">Slack</span>
+                </a>
+            </div>
+            <div class="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+            <form action="{% url 'set_language' %}"
+                  method="post"
+                  class="flex items-center">
+                {% csrf_token %}
+                <select name="language"
+                        onchange="this.form.submit()"
+                        class="bg-transparent border border-gray-300 rounded-md text-base font-medium text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    {% get_current_language as LANGUAGE_CODE %}
+                    {% get_available_languages as LANGUAGES %}
+                    {% for lang_code, lang_name in LANGUAGES %}
+                        <option value="{{ lang_code }}"
+                                {% if lang_code == LANGUAGE_CODE %}selected{% endif %}>{{ lang_name }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+</footer>

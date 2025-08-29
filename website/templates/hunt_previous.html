@@ -1,0 +1,55 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+{% block title %}
+    Previous Hunts
+{% endblock title %}
+{% block description %}
+    Explore the details of previous hunts. View information about past hunts, including domain details, descriptions, and outcomes.
+{% endblock description %}
+{% block keywords %}
+    Previous Hunts, Past Hunts, Hunt History, Domain Details, Hunt Outcomes
+{% endblock keywords %}
+{% block og_title %}
+    Previous Hunts - Explore Past Hunts
+{% endblock og_title %}
+{% block og_description %}
+    Discover the details of previous hunts, including domain information, descriptions, and outcomes. Explore the history of hunts.
+{% endblock og_description %}
+{% block content %}
+    <section>
+        {% include "includes/organization_sidenav.html" %}
+    </section>
+    {% if hunts %}
+        <div class="p-4">
+            <h3 class="text-2xl font-bold text-left mb-4">Previous Hunt</h3>
+            <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for hunt in hunts %}
+                    <li class="flex">
+                        <div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col w-full">
+                            {% if hunt.logo %}
+                                <div class="w-full h-48 overflow-hidden">
+                                    <img src="{{ hunt.logo }}"
+                                         alt="{{ hunt.name }}"
+                                         class="w-full h-full object-cover"
+                                         width="300"
+                                         height="200">
+                                </div>
+                            {% endif %}
+                            <div class="p-6 bg-gradient-to-br from-[#EF8D9C] to-[#FFC39E] flex-1 flex flex-col">
+                                <h2 class="text-xl font-bold text-white mb-2">{{ hunt.name }}</h2>
+                                <p class="text-sm text-white mb-4">
+                                    {{ hunt.domain.name }}, {{ hunt.domain.organization.name }} - Starts on {{ hunt.starts_on }}
+                                </p>
+                                <a href="{% url 'organization_hunt_results' hunt.pk %}" class="mt-auto">
+                                    <button class="w-full py-2 px-4 text-white border border-white rounded-md hover:bg-white hover:text-[#EF8D9C] transition duration-200">
+                                        Read More
+                                    </button>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock content %}

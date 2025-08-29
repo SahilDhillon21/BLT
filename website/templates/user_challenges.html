@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "includes/sidenav.html" %}
+    <div class="text-center mx-auto my-5 p-5 bg-gray-100 rounded-lg max-w-4xl shadow-md">
+        <h2 class="text-xl font-bold">Single User Challenges</h2>
+        {% if challenges %}
+            <div>
+                {% for challenge in challenges %}
+                    <div class="my-4 p-4 bg-white rounded-lg border border-gray-300 text-left cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-300"
+                         onclick="toggleDetails({{ challenge.id }})">
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold flex-grow">{{ challenge.title }}</span>
+                            <span class="text-sm text-gray-500 font-bold mr-1">{{ challenge.points }} pts</span>
+                            <span id="dropdown-icon-{{ challenge.id }}"
+                                  class="fas fa-chevron-down text-base transition-transform duration-300"></span>
+                        </div>
+                        <div id="challenge-details-{{ challenge.id }}"
+                             class="hidden mt-2 text-sm text-gray-600">
+                            <p>{{ challenge.description }}</p>
+                        </div>
+                        <!-- Progress Bar always visible -->
+                        <div class="relative w-full bg-gray-300 rounded mt-2 h-5">
+                            <div class="h-full bg-red-600 rounded transition-all duration-500"
+                                 id="progress-bar-{{ challenge.id }}"
+                                 data-progress="{{ challenge.progress }}"></div>
+                            <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold text-gray-800">{{ challenge.progress|floatformat:0 }}%</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-700">No challenges available.</p>
+        {% endif %}
+    </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set progress bar widths based on data-progress attribute
+    const progressBars = document.querySelectorAll('[data-progress]');
+    progressBars.forEach(bar => {
+        const progress = bar.getAttribute('data-progress');
+        bar.style.width = progress + '%';
+    });
+});
+
+function toggleDetails(challengeId) {
+    const detailsElement = document.getElementById(`challenge-details-${challengeId}`);
+    const iconElement = document.getElementById(`dropdown-icon-${challengeId}`);
+
+    if (detailsElement.classList.contains("hidden")) {
+        detailsElement.classList.remove("hidden");
+        iconElement.classList.add("transform", "rotate-180");
+    } else {
+        detailsElement.classList.add("hidden");
+        iconElement.classList.remove("transform", "rotate-180");
+    }
+}
+    </script>
+{% endblock content %}

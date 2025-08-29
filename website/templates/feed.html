@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Global Activity Feed{% endblock %}
+{% block description %}
+    Stay updated with the latest activities on the OWASP Bug Logging Tool. View new, updated, and approved actions, and interact with them directly.
+{% endblock %}
+{% block keywords %}
+    activity feed, global activity, OWASP, Bug Logging Tool, updates, approval, user interactions
+{% endblock %}
+{% block og_title %}Global Activity Feed for OWASP Bug Logging Tool{% endblock %}
+{% block og_description %}
+    Browse the global activity feed for the OWASP Bug Logging Tool, where you can see the latest activities, updates, and approved contributions.
+{% endblock %}
+{% block content %}
+    {% include "includes/sidenav.html" %}
+    <h1 class="text-center text-red-600 text-2xl mt-10 mb-5">Global Activity Feed</h1>
+    <div class="bg-gray-50 rounded-lg shadow-md mx-auto p-5 max-w-4xl overflow-y-auto max-h-[calc(100vh-60px)] mb-5 relative">
+        <ul class="space-y-5 p-5">
+            {% for activity in page_obj %}
+                <li class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm hover:scale-105 hover:shadow-md transition-transform duration-300 ease-in-out transform origin-center z-10">
+                    <!-- Card Header -->
+                    <div class="flex justify-between items-center mb-3">
+                        <!-- Reporter and Time -->
+                        <div class="text-gray-800">
+                            <strong class="text-lg">{{ activity.user.username }}</strong>
+                            <span class="text-sm text-gray-500 ml-2">{{ activity.timestamp|date:"M d, Y, H:i A" }}</span>
+                        </div>
+                        <!-- Activity Type -->
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-2 {% if activity.action_type == 'create' %}bg-red-500{% elif activity.action_type == 'update' %}bg-green-500{% else %}bg-white{% endif %}"></span>
+                            <span class="text-sm text-gray-700 capitalize">{{ activity.get_action_type_display }}</span>
+                        </div>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="space-y-3">
+                        <!-- Title -->
+                        <h3 class="text-xl font-semibold text-gray-900">{{ activity.title }}</h3>
+                        <!-- Image -->
+                        {% if activity.image %}
+                            <div class="w-full">
+                                <img src="{{ activity.image.url }}"
+                                     alt="Activity Image"
+                                     class="w-full rounded-lg border border-gray-200"
+                                     width="{{ activity.image.width }}"
+                                     height="{{ activity.image.height }}">
+                            </div>
+                        {% endif %}
+                        <!-- Description -->
+                        <p class="text-gray-600 text-sm leading-relaxed">{{ activity.description }}</p>
+                        <!-- Action Buttons -->
+                        <div class="flex gap-3 mt-4">
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200"
+                                    data-id="{{ activity.id }}"
+                                    onclick="likeActivity({{ activity.id }})">
+                                Like (<span id="like-count-{{ activity.id }}">{{ activity.like_count }}</span>)
+                            </button>
+                            <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-200"
+                                    data-id="{{ activity.id }}"
+                                    onclick="dislikeActivity({{ activity.id }})">
+                                Dislike (<span id="dislike-count-{{ activity.id }}">{{ activity.dislike_count }}</span>)
+                            </button>
+                            <!-- Approve Button (for mentors) -->
+                            {% if is_mentor and not activity.is_approved %}
+                                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                                        data-id="{{ activity.id }}"
+                                        onclick="approveActivity({{ activity.id }})">Approve</button>
+                            {% endif %}
+                            <!-- Approved Label -->
+                            {% if activity.is_approved %}
+                                <div class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold">Approved For BlueSky</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </li>
+            {% empty %}
+                <p class="text-center text-gray-600">No activities recorded.</p>
+            {% endfor %}
+        </ul>
+    </div>
+    <!-- Pagination -->
+    {% if is_paginated %}
+        <div class="flex justify-center gap-3 mt-5">
+            {% if page_obj.has_previous %}
+                <a href="?page=1"
+                   class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-200">First</a>
+                <a href="?page={{ page_obj.previous_page_number }}"
+                   class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-200">Previous</a>
+            {% endif %}
+            <span class="text-gray-700 text-lg mx-4">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"
+                   class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-200">Next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}"
+                   class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-200">Last</a>
+            {% endif %}
+        </div>
+    {% endif %}
+    <script>
+      function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+
+      function likeActivity(activityId) {
+          fetch(`/activity/like/${activityId}/`, {
+              method: "POST",
+              headers: { "X-CSRFToken": getCookie("csrftoken") },
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  document.getElementById(`like-count-${activityId}`).innerText = data.like_count;
+                  document.getElementById(`dislike-count-${activityId}`).innerText = data.dislike_count;
+              } else {
+                  console.error(data.error);
+              }
+          })
+          .catch(error => console.error("Error:", error));
+      }
+    
+      function dislikeActivity(activityId) {
+          fetch(`/activity/dislike/${activityId}/`, {
+              method: "POST",
+              headers: { "X-CSRFToken": getCookie("csrftoken") },
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  document.getElementById(`like-count-${activityId}`).innerText = data.like_count;
+                  document.getElementById(`dislike-count-${activityId}`).innerText = data.dislike_count;
+              } else {
+                  console.error(data.error);
+              }
+          })
+          .catch(error => console.error("Error:", error));
+      }
+    
+      function approveActivity(activityId) {
+          fetch(`/activity/approve/${activityId}/`, {
+              method: "POST",
+              headers: { "X-CSRFToken": getCookie("csrftoken") },
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  location.reload();
+              } else {
+                  console.error(data.error);
+              }
+          })
+          .catch(error => console.error("Error:", error));
+      }
+
+    </script>
+{% endblock %}

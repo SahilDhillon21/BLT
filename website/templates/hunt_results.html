@@ -1,0 +1,74 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+{% block title %}
+    Hunt Results
+{% endblock title %}
+{% block description %}
+    Explore the results of the completed hunt. View details about the domain, hunt description, and the hunt URL.
+{% endblock description %}
+{% block keywords %}
+    Hunt Results, Completed Hunt, Hunt Details, Domain Information, Hunt URL
+{% endblock keywords %}
+{% block og_title %}
+    Hunt Results - Completed Hunt Details
+{% endblock og_title %}
+{% block og_description %}
+    Discover the details of the completed hunt including the domain, hunt description, and URL. Explore the results and insights from the hunt.
+{% endblock og_description %}
+{% block content %}
+    <link href="{% static 'mdeditor/css/editormd.min.css' %}" rel="stylesheet">
+    <link href="{% static 'mdeditor/css/editormd.preview.css' %}"
+          rel="stylesheet">
+    <section>
+        {% include "includes/user_sidenav.html" %}
+    </section>
+    <main>
+        <!-- Banner Section -->
+        <div id="banner"
+             class="bg-[url('https://i.postimg.cc/FzSHSbhQ/img-soccer.jpg')] bg-cover bg-no-repeat bg-center h-[400px] flex items-start justify-start p-8 sm:p-12 md:p-16 lg:p-20">
+            <div class="text-white italic pl-4 mt-4">
+                <h1 class="text-6xl font-italic sm:text-5xl md:text-6xl lg:text-7xl">
+                    {{ hunt.domain.organization.name }}
+                    <span class="bg-blue-500 text-white text-sm font-bold px-2 py-1 rounded shadow ml-2">{{ hunt.domain.name }}</span>
+                </h1>
+                <p class="text-xl mt-5 sm:text-lg md:text-xl lg:text-2xl">Ended</p>
+            </div>
+        </div>
+    </main>
+    <!-- Content Section -->
+    <div id="content" class="p-4">
+        <textarea class="hidden">{{ hunt.description }}</textarea>
+    </div>
+    <!-- Hunt URL -->
+    <div class="p-4 text-lg">
+        Hunt URL:
+        <a href="{{ hunt.domain.url }}" class="text-blue-500 hover:underline">{{ hunt.domain.url }}</a>
+    </div>
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+    <script src="{% static 'mdeditor/js/editormd.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/lib/marked.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/lib/prettify.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/lib/raphael.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/lib/underscore.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/lib/sequence-diagram.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/lib/flowchart.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/lib/jquery.flowchart.min.js' %}"></script>
+    <script>
+        $(function () {
+            editormd.markdownToHTML("content", {
+                emoji: true,
+                taskList: true,
+                tex: true,
+                flowChart: true,
+                sequenceDiagram: true,
+            });
+
+            $(".reference-link").each(function (i, obj) {
+                console.log(obj);
+            });
+        });
+    </script>
+{% endblock content %}
